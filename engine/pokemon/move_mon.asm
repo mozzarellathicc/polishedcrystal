@@ -268,26 +268,27 @@ endr
 	jr z, .not_shiny
 
 .shiny_check
-	call Random
-	and a
-	jr nz, .not_shiny ; 255/256 not shiny
-	ld a, [wCurKeyItem]
-	push af
-	ld a, SHINY_CHARM
-	ld [wCurKeyItem], a
-	push hl
-	push bc
-	push de
-	call CheckKeyItem
-	pop de
-	pop bc
-	pop hl
-	jr c, .shiny_charm
-	pop af
-	ld [wCurKeyItem], a
-	call Random
-	cp SHINY_NUMERATOR
-	jr nc, .not_shiny ; 240/256 still not shiny
+        call Random
+        and 47 ; Mask out the upper 4 bits, leaving a value between 0-63
+        cp 0
+        jr nz, .not_shiny ; 255/256 not shiny
+        ld a, [wCurKeyItem]
+        push af
+        ld a, SHINY_CHARM
+        ld [wCurKeyItem], a
+        push hl
+        push bc
+        push de
+        call CheckKeyItem
+        pop de
+        pop bc
+        pop hl
+        jr c, .shiny_charm
+        pop af
+        ld [wCurKeyItem], a
+        call Random
+        cp SHINY_NUMERATOR
+        jr nc, .not_shiny ; 240/256 still not shiny
 .shiny
 	ld a, SHINY_MASK
 	jr .got_shininess
