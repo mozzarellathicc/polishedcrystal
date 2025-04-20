@@ -944,63 +944,64 @@ DayCare_GenerateEgg:
 	ld a, NUM_NATURES
 	call RandomRange
 .got_nature
-	ld hl, wTempMonNature
-	or [hl]
-	ld [hl], a
+        ld hl, wTempMonNature
+        or [hl]
+        ld [hl], a
 
-	call Random
-	and a
-	jr nz, .not_shiny ; 255/256 not shiny
+        call Random
+        and 19
+        cp 0
+        jr nz, .not_shiny ; 255/256 not shiny
 
-	; Shiny. Shiny rate after the above pass is:
-	; 1/16 - Usual
-	; 3/16 - Shiny Charm (+2 shiny modifier)
-	; 6/16 - Masuda (+5 shiny modifier)
-	; 8/16 - Both (+7 shiny modifier)
-	ld a, 16
-	call RandomRange
-	ld b, a
-	ld c, 1
+        ; Shiny. Shiny rate after the above pass is:
+        ; 1/16 - Usual
+        ; 3/16 - Shiny Charm (+2 shiny modifier)
+        ; 6/16 - Masuda (+5 shiny modifier)
+        ; 8/16 - Both (+7 shiny modifier)
+        ld a, 16
+        call RandomRange
+        ld b, a
+        ld c, 1
 
-	; Check Shiny Charm
-	ld a, SHINY_CHARM
-	ld [wCurKeyItem], a
-	push hl
-	push bc
-	push de
-	call CheckKeyItem
-	pop de
-	pop bc
-	pop hl
-	jr nc, .shiny_charm_done
-	inc c
-	inc c
+        ; Check Shiny Charm
+        ld a, SHINY_CHARM
+        ld [wCurKeyItem], a
+        push hl
+        push bc
+        push de
+        call CheckKeyItem
+        pop de
+        pop bc
+        pop hl
+        jr nc, .shiny_charm_done
+        inc c
+        inc c
 .shiny_charm_done
-	; The "Masuda method" in the official games is a shiny booster
-	; for when parents of different nationalities trade. Consider
-	; "different OTID" as different nationalities here.
-	ld a, [wBreedMon1ID]
-	ld d, a
-	ld a, [wBreedMon1ID + 1]
-	ld e, a
-	ld a, [wBreedMon2ID]
-	cp d
-	jr nz, .masuda_ok
-	ld a, [wBreedMon2ID + 1]
-	cp e
-	jr z, .masuda_done
+        ; The "Masuda method" in the official games is a shiny booster
+        ; for when parents of different nationalities trade. Consider
+        ; "different OTID" as different nationalities here.
+        ld a, [wBreedMon1ID]
+        ld d, a
+        ld a, [wBreedMon1ID + 1]
+        ld e, a
+        ld a, [wBreedMon2ID]
+        cp d
+        jr nz, .masuda_ok
+        ld a, [wBreedMon2ID + 1]
+        cp e
+        jr z, .masuda_done
 .masuda_ok
-	ld a, 5
-	add c
-	ld c, a
+        ld a, 5
+        add c
+        ld c, a
 .masuda_done
-	ld a, b
-	cp c
-	jr nc, .not_shiny
-	ld a, SHINY_MASK
-	ld hl, wTempMonShiny
-	or [hl]
-	ld [hl], a
+        ld a, b
+        cp c
+        jr nc, .not_shiny
+        ld a, SHINY_MASK
+        ld hl, wTempMonShiny
+        or [hl]
+        ld [hl], a
 .not_shiny
 
 	; Gender
